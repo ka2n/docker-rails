@@ -1,4 +1,4 @@
-FROM ruby:2.5.1-alpine
+FROM ruby:2.5.1-alpine3.7
 
 LABEL maintainer="Katsuma Ito <katsumai@gmail.com>"
 
