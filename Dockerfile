@@ -1,3 +1,5 @@
+# syntax = tonistiigi/dockerfile:runmount20181002
+
 FROM ruby:2.5.1-alpine3.7
 
 LABEL maintainer="Katsuma Ito <katsumai@gmail.com>"
@@ -22,7 +24,9 @@ EXPOSE 3000
 WORKDIR /usr/src/app
 
 ONBUILD COPY Gemfile Gemfile.lock ./
-ONBUILD RUN apk add --update \
+
+ARG MOUNT_BUNDLE_CACHE_DIR=/root/.bundle/cache
+ONBUILD RUN --mount=type=cache,target=${MOUNT_BUNDLE_CACHE_DIR} apk add --update \
     --virtual buildeps \
     --no-cache \
     $RUBY_DEV_DEPS && \
@@ -30,8 +34,9 @@ ONBUILD RUN apk add --update \
     env BUNDLE_FORCE_RUBY_PLATFORM=1 bundle install --without test development && \
     apk del buildeps
 
+ARG MOUNT_YARN_CACHE_DIR=/root/.cache/yarn
 ONBUILD COPY package.json yarn.lock ./
-ONBUILD RUN apk add --update \
+ONBUILD RUN --mount=type=cache,target=${MOUNT_YARN_CACHE_DIR} apk add --update \
     --virtual buildeps \
     --no-cache \
     $NODE_DEV_DEPS && \
